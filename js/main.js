@@ -1,21 +1,27 @@
 const button = document.querySelector('button')
-// document.querySelector('.results').style.display = 'none'
 button.addEventListener('click', () => {
-    let search = document.querySelector('input').value
-    const url = ``
 
-    fetch(url) //Make sure to include to search for date
-    .then(res => res.json()) // parse response as JSON
+    document.querySelector(".word").innerHTML = ''
+    document.querySelector("img").src = ''
+    document.querySelector('.noImg').innerHTML = ''
+
+    fetch("https://random-word-api.herokuapp.com/word")
+    .then(response => response.json())
     .then(data => {
-        console.log(data)
-        // document.querySelector('.results').style.display = 'block'
-        // document.querySelector('.cityState').innerHTML = `${data.location.name}, ${data.location.region}`
-        // document.querySelector('.country').innerHTML = data.location.country
-        // document.querySelector('.describe').innerHTML = data.current.condition.text
-        // document.querySelector('.temp').innerHTML = `${data.current.temp_f}\u00B0F`
-        // document.querySelector('img').src = `https:${data.current.condition.icon}`
+    const word = data[0];
+    console.log("Random Word:", word);
+
+    fetch(`https://api.unsplash.com/photos/random?query=${word}&client_id=N1W_AmNXsmM959uxF16S-Pl56VXTtST7IWOek1_V1q4`)
+        .then(response => response.json())
+        .then(imageData => {
+            document.querySelector(".word").innerHTML = word;
+            if (imageData.urls && imageData.urls.full) {
+                document.querySelector("img").src = imageData.urls.full;
+            } else {
+                document.querySelector('.noImg').innerHTML = 'This word is a little too random for the images available...'
+            }
+        })
+        .catch(error => console.error("Unsplash API Error:", error));
     })
-    .catch(err => {
-        console.log(`error ${err}`)
-    })
+    .catch(error => console.error("Random Word API Error:", error));
 })
